@@ -1,5 +1,151 @@
 # 数据结构自定义类型
 
+## 线性表
+
+### 1、线性表的顺序存储
+
+顺序表的特点是逻辑顺序与物理顺序相同
+
+```c++
+// 静态分配
+typedef struct{
+    ElemType data[MaxSize];
+    int length;
+}SqList;
+
+// 动态分配
+typedef struct{
+    ElemType *data;
+    int MaxSize, length;
+} SeqList;
+L.data = (ElemType *)malloc(sizeof(ElemType)* InitSize)
+    
+// 插入
+bool ListInsert(SqList &L, int i, ElemType e){  //将e插入L的i位置
+    if(i<1 || i >L.length+1){
+        return false;
+    }
+    if L.length > L.MaxSize{
+        return false;
+    }
+    for(int j=L.length; j>=i; j--){
+        L.data[j] = L.data[j-1];
+    }
+    L.data[i-1] = e;
+    L.length++;
+    return true;
+}
+
+// 删除
+bool ListDel(SqList &L, int i, ElemType &e){  //删除L中第i个元素
+    if(i<1 || i> L.length){
+        return false;
+    }
+    if(L.length==0){
+        return false;
+    }
+    e = L.data[i-1]
+    for(int j=i; j<L.length; j++){
+        L.data[j-1] = L.data[j];
+    }
+    L.length--;
+    return true;
+}
+
+//按值查找
+int ListLoc(SqList L, ElemType e){
+    for(int i=0; i<L.length; i++){
+        if (L.data[0] == e){
+            return i+1;
+        }
+    }
+    return -1;
+}
+```
+
+### 2、线性表的链式存储
+
+头结点和头指针的区分：不管带不带头结点，头指针始终指向链表的第一个结点，头结点不是一个有效的结点，计算链表长度时不包括在内。
+
+引入头结点（哨兵结点）的好处：
+
+- 1、第一个数据结点的位置被存放在头结点的指针域中，因此在链表的第一个位置上的操作和在链表其他位置上的操作一致，无需特殊处理。
+- 2、无论链表是否为空，其头指针都指向头结点的非空指针。因此空表和非空表的处理也一致。
+
+
+
+```c++
+typedef struct LNode{
+    ElemType data;    //数据域
+    struct LNode *next; // 指针域
+}LNode, *LinkList;
+
+// 按序号查找链表的值
+LNode *GetElem(LinkList L, int i){
+    int j=1;
+    LNode *p = L->next; //头结点
+    if(i==0){
+        return p; // 0返回头结点
+    }
+    if(i<1){
+        return NULL; // 无效
+    }
+    while(p&&j<i){
+        p=p->next;
+        j++;
+    }
+    return p;
+}
+
+// 按值查找链表
+LNode *LocLinkList(LinkList L, ElemType e){
+    LNode *p = L->next; //头结点
+    while(p&&p->next!=e){
+        p=p->next;
+    }
+    return p;
+}
+
+// 插入，后插
+bool Insert(&LinkList L, int i, ElemType e){
+    LNode *p = GetElem(L, i-1);
+    if(p){
+        LNode tmp;
+        tmp.data = e;
+        tmp->next = p->next;
+        p->next = tmp;
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+// 删除
+bool Deleted(&LinkList L, int i){
+    LNode *p = GetElem(L, i-1);
+    LNode *tmp = p->next;
+    p->next = tmp->next;
+}
+
+// 求表长, 头结点不算
+int GetLength(LinkList L){
+    LNode *p = L->next; //头结点
+    int i=0;
+    while(p->next!=NULL){
+        i++;
+    }
+    return i;
+}
+
+```
+
+
+
+
+
+
+
 ## 图
 
 ### 1、图的存储结构
@@ -19,7 +165,7 @@ typedef struct {
 }MGraph;
 ```
 
-#### 邻接表
+#### 邻接表 
 
 若涉及邻接表的问题，从：边表结点、顶点表结点为出发点回答。
 
@@ -141,7 +287,7 @@ void BFSMinDisdance(Graph G, int u){
 
 ##### 广度优先生成树
 
-在BFS的过程中，可以得到一个遍历树，称为广度优先生成树。
+类似于二叉树的先序遍历算法。在BFS的过程中，可以得到一个遍历树，称为广度优先生成树。
 
 #### 深度优先搜索（DFS）	
 
