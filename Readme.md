@@ -61,6 +61,99 @@ int ListLoc(SqList L, ElemType e){
     }
     return -1;
 }
+
+// 翻转
+void Reverse(SqList &L){
+    ElemType tmp;
+    for(i=0; i<L.length/2;i++){
+        tmp = L.data[i];
+        L.data[i] = L.data[L.length-i];
+        L.data[L.length-i]=tmp;
+    }
+}
+
+// 删除顺序表中为所有值为x的元素
+void Deleted_X(SqList L, ElemType x){
+    int k=0;
+    for(i=0;i<L.length;i++){
+        if (L.data[i]==x){
+            k++;
+        }
+        else{
+            L.data[i-k] = L.data[i];
+        }
+    }
+    L.length = L.length - k;
+}
+
+
+// 两个有序顺序表合成一个有序顺序表
+SqList Contact_Two_SqList(SqList L1, SqList L2){
+    // 如果有一个为空，直接返回另一个
+    if (L1.length==0){
+        return L2
+    }
+    if (L2.length==0){
+        return L1    
+    }
+    int i=0;
+    int j=0;
+    // 初始化 SqList
+    SqList L3;
+    L3.data = (ElemType *)malloc(sizeof(int)*(L1.length+L2.length));
+    L3.MaxSize = L1.length+L2.length;
+    L3.length = 0;
+    while(!(i==L1.length && j==L2.length)){
+        if (L1.data[i]<L2.data[j]){
+            L3.data[L3.length] = L1.data[i];
+            L3.length+=1;
+            if (i<L1.length){
+                i++;
+            }
+        else{
+            L3.data[L3.length] = L2.data[j];
+            L3.length+=1;
+            if (j<L2.length){
+                j++;
+            }
+        }
+    }
+    return L3;      
+}
+    
+// 两个有序顺序表合成一个有序顺序表， 王道书上的方法
+bool Merge(SqList L1, SqList L2, SqList &L3){
+    if((L1.length + L2.length)>L3.MaxSize){
+        return false;
+    }
+    int i=0;
+    int j=0;
+    int k=0;
+    while (i<L1.length && j<L2.length){
+        if (L1.data[i] < L2.data[j]){
+            L3.data[k]=L1.data[i]
+            k++;
+            i++;
+        }
+        else{
+            L3.data[k]=L2.data[j];
+            k++;
+            j++;
+        }
+    }
+    while (i<L1.length){
+        L3.data[k]=L1.data[i];
+        k++;
+        i++
+    }
+    while (j<L2.length){
+        L3.data[k]=L2.data[j];
+        k++;
+        j++;
+    }
+    L3.length = k;
+    return true;
+}
 ```
 
 ### 2、线性表的链式存储
@@ -72,7 +165,7 @@ int ListLoc(SqList L, ElemType e){
 - 1、第一个数据结点的位置被存放在头结点的指针域中，因此在链表的第一个位置上的操作和在链表其他位置上的操作一致，无需特殊处理。
 - 2、无论链表是否为空，其头指针都指向头结点的非空指针。因此空表和非空表的处理也一致。
 
-
+##### 单链表
 
 ```c++
 typedef struct LNode{
@@ -138,13 +231,97 @@ int GetLength(LinkList L){
     return i;
 }
 
+
+// 带有头结点单链表，链表翻转1
+void Traverse1(LinkList &L){
+    LNode *p = L->next;  //头结点
+    LNode *r = p->next; //第一个结点
+    while (r!=NULL){
+        p = L->next->next; // 第一个结点
+        p->next = r;    
+        r = r->next;
+        p->next->next = 
+        r= r->next;
+    }
+}
+
+// 带有头结点单链表，链表翻转2
+void Traverse1(LinkList &L){
+    
+}
+
+// 单链表排序
+void Sort(LinkList &L){
+    
+}
+
+// 找两个单链表的重合部分
+void Sort(LinkList &L1){
+    
+}
 ```
 
+##### 双链表
 
+```c++
+// 数据结构
+typedef struct DNode{
+    ElemType data;
+    struct DNode *prior, *next; //前驱指针、后继指针
+}DNode, *DLinkList;
 
+// 插入
+bool Insert(DLinkList &L, ElemType e, int i){
+    DNode *p=GetElem(L, i-1); // 找到插入位置i的前一个结点
+    if (p!=NULL){
+        DNode tmp;  // 中间缓存
+        tmp.data = e;
+        tmp->next=p->next;
+        tmp->prior = p;
+        p->next->prior = tmp;
+        p->next = tmp;
+        return true;
+    }
+    else{
+        return false;
+    }
+}
 
+// 删除
+bool Deleted(DLinkList &L, int i){
+    DNode *p=GetElem(L, i); // 删除位置的结点的指针
+    if(p!=NULL){
+        p->prior->next = p->next;
+        p->next->prior = p->prior;
+        free(p);
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+```
 
+##### 循环链表
 
+- 循环单链表：表中的最后一个结点的指针的值不为`NULL`，而是指向头结点，形成一个环。
+  - 1、**没有指针域为`NULL`的结点。因此判断链表为空：`头结点的指针=头指针`**
+  - 2、**可以不设置头指针而是设置尾指针，使得头尾操作效率更高。`r->next=头指针`**
+- 循环双链表：头结点的`prior`指向尾节点
+  - 1、判断链表为空：**头结点的`next`和`prior`都等于头指针。**
+
+### 3、顺序表和链表对比
+
+|            | 顺序表（访问多）               | 链表（插入、删除、长度不定） |
+| ---------- | ------------------------------ | ---------------------------- |
+| 按序号查找 | $O(1)$                         | $O(N)$                       |
+| 按值查找   | 无序$O(N)$；有序$O(log_{2^n})$ | $O(N)$                       |
+| 插入、删除 | $O(N)$，需要移动               | $O(N)$，主要是比较操作       |
+| 空间分配   | 无法扩充                       | 动态扩充                     |
+
+- 基于存储考虑：无法估计线性表的长度和规模时，用链表。
+- 基于运算考虑：顺序表访问快；但是进行插入删除操作，链表优于线性表。
+- 基于环境的考虑：顺序表简单，链表需要用指针相对复杂。
 
 ## 图
 
