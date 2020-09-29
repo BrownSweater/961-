@@ -233,31 +233,31 @@ int GetLength(LinkList L){
 
 
 // 带有头结点单链表，链表翻转1
-void Traverse1(LinkList &L){
+void Traverse1(LinkList L){
     LNode *p = L->next;  //头结点
-  	LNode *r = p->next;
     p->next = NULL;
     while (p!=NULL){
+        r = p->next; //保存后继结点
         p->next = L->next; //插入的结点p指向链表中的第一个结点
         L->next = p; // 令p为链表的第一个结点    
         p = r; // 待插入结点p后移一位
-      	r = r->next;
     }
 }
 
 // 带有头结点单链表，链表翻转2
-void Traverse2(LinkList &L){
+void Traverse2(LinkList L){
   LNode *pre, *p, *r;
   p = L->next; // 待插入的结点
   r = p->next;  // 待插入结点的下一个结点
-  pre = NULL; // 初始时，待插入结点为第一个结点，因此前面无结点
-  while (p!=NULL){  // 
-    p->next = pre;
-    L->next = p;
-    pre = p;
-    p = r;
-    r= r->next;
-  } 
+  p->next = NULL; // 初始时，待插入结点为第一个结点，因此前面无结点
+  while (p!=NULL){
+      pre = p;
+      p = r;
+      r= r->next;
+      p->next = pre;
+  }
+    L-next=p
+    return L
 }
 
 // 单链表排序 O(n^2)
@@ -292,25 +292,9 @@ void GetSame(LinkList L1, LinkList L2){
   	while(p!=NULL){
       	L2Length++;
     }
-  	if (L2Length>L1Length){
-      	k = L2Length - L1Length;
-      	LNode *p2= L2->next;
-      	for(int i=0; i<k-1; ++k){
-          	p = p->next;
-        }
-      	LNode *p1= L1->next;
-      	while(p1!=NULL){
-          	p1 = p1->next;
-          	p2 = p2->next;
-        }
-      		
-    }
-  	// 这部分一样的
-  	else{
-      	k = L1Length - L2Length;
-    }
-
-}
+  
+    
+// 链表归并
 ```
 
 ##### 双链表
@@ -374,6 +358,189 @@ bool Deleted(DLinkList &L, int i){
 - 基于存储考虑：无法估计线性表的长度和规模时，用链表。
 - 基于运算考虑：顺序表访问快；但是进行插入删除操作，链表优于线性表。
 - 基于环境的考虑：顺序表简单，链表需要用指针相对复杂。
+
+
+
+## 树
+
+### 1、二叉树的顺序存储和链式存储
+
+#### 顺序存储
+
+适合完全二叉树和满二叉树，树中的结点序号可以反映结点之间的逻辑关系。
+
+#### 链式存储
+
+含有n个结点的二叉链表中，有n+1个空链域。
+
+```c++
+typedef struct BiTNode{
+    ElemType data;
+    BiTNode *lchild, *rchild;
+}BiTNode, *BiTree;
+```
+
+
+
+### 2、二叉树的遍历
+
+- 二叉树的先序和中序可以确定一棵树
+- 二叉树的中序和后序可以确定一棵树
+- 二叉树的层次和中序可以确定一棵树
+
+#### 前序遍历
+
+```c++
+// 递归
+void PreOrder(BiTree T){
+    if (T!=NULL){
+        visit(T);
+        PreOrder(T->lchild);
+        PreOrder(T->rchild);
+    }
+}
+
+// 非递归
+void PreOrder2(BiTree T){
+    BiTNode *p;
+    p = T;
+    InitStack(S); // 初始化一个辅助栈
+    while (p || !IsEmpty(S)){
+        if (p!=NULL){
+            visit(p);
+            Push(S, p);
+            p = p->lchild;
+        }
+        else{
+            Pop(S, p);
+            p = p->rchild;
+        }
+    }
+}
+```
+
+
+
+#### 中序遍历
+
+```c++
+// 递归实现
+void InOrder(BiTree T){
+    while (T!=NULL){
+        InOrder(T->lchild);
+        visit(T);
+        InOrder(T->rchild);
+    }
+}
+
+// 非递归实现
+void InOrder2(BiTree T){
+    BiTNode *p = T;
+    InitStack(S);
+    while (p || !IsEmpty(S)){ // p不空或者栈不空时循环
+        if (p!=null){
+            Push(S, p);  // p不为空一直访问左子树
+            p = p->next; 
+        }
+        else{
+            Pop(S, p); // p空就出栈访问结点
+            visit(p);
+            p=p->rchild;
+        }
+    }
+}
+```
+
+
+
+#### 后序遍历
+
+```c++
+// 递归
+void PostOrder(BiTree T){
+    while (T!=null){
+        PostOrder(T->lchild);
+        PostOrder(T->rchild);
+        visit(T);
+    }
+}
+
+// 非递归
+void PostOrder(BiTree T){
+    BiTNode *r, *p=T;
+    InitStack(S);
+    while (p || !IsEmpty(S)){
+        if (p){
+            Push(S, p); // p不空就入栈
+            p = p->next; //往左走
+        }
+        else{
+            GetTop(S, p); // 拿出最左边的结点
+            if (p->rchild && p->rchild!=r){ // 右结点没被访问过
+                p = p->rchild;
+                Push(S, p); //右结点入栈
+                p = p->lchild; // 往左边走
+            }
+            else{
+                Pop(S, p);  
+                visit(p);  //访问结点
+                r=p;  // 标记此结点已经访问过
+                p=null; // 后序遍历只要访问了的结点就是局部子树的根节点，没有左右结点了
+                 
+            }
+        }
+    }
+}
+```
+
+
+
+#### 层次遍历
+
+```c++
+// 借助辅助队列进行遍历
+void LevelOrder(BiTree T){
+    BiTNode *p = T;
+    InitQueue(Q);
+    EnQueue(Q, s); // 队列里的元素才能访问
+    while (p || !IsEmpty(Q)){
+        DeQueue(Q, p);
+        visit(p);
+        if (p->lchild!=null){  // 不空才能入队，因为队列里的所有元素都需要访问
+            EnQueue(Q, p-lchild);
+        }
+	    if (p->rchild!=null){
+            EnQueue(Q, p->rchild);
+        } 
+    }
+}
+```
+
+
+
+### 3、和二叉树遍历相关的题目
+
+- 先序遍历和后序遍历正好相反的树的形态是一层只有一个结点
+- 先序遍历和后序遍历正好相同的树的形态是只有一个根节点
+
+```c++
+// 非递归算法求树的高度
+void GetTreeHeight(BiTNode T){
+    
+}
+
+// 递归算法求树的高度（可扩展到求最大宽度，每层节点数）
+
+
+// 求二叉树所有双分支结点个数
+
+
+// 根据先序和中序构建二叉树
+
+// 判断是否是完全二叉树
+```
+
+
 
 ## 图
 
@@ -600,6 +767,22 @@ void DFS(Graph G, int V){
 
 - 时间复杂度：$O(V^3)$
 - 允许图中有带负权值的边，但不允许包含带有负权值的边组成的回路
+
+
+
+
+
+
+
+# 历年考点
+
+|      | 线性表                                  | 树                       | 排序         | 查找       | 图               |
+| ---- | --------------------------------------- | ------------------------ | ------------ | ---------- | ---------------- |
+| 2017 | 向量和数组的优缺点对比                  | 遍历二叉树叶子结点       | 堆排序       | 二叉排序树 |                  |
+| 2018 | 栈用单链表和数组哪个好；实现栈的pop函数 | 哈夫曼树                 | 希尔排序     | 哈希冲突   |                  |
+| 2019 | 循环单链表                              | 统计有两个非空子树的结点 | 二叉堆；快排 |            | Dijkstra算法填空 |
+| 2020 |                                         | 统计有一个非空子树的结点 | 快排；快排   | 二叉搜索树 | floyd            |
+|      |                                         |                          |              |            |                  |
 
 
 
