@@ -235,29 +235,81 @@ int GetLength(LinkList L){
 // 带有头结点单链表，链表翻转1
 void Traverse1(LinkList &L){
     LNode *p = L->next;  //头结点
-    LNode *r = p->next; //第一个结点
-    while (r!=NULL){
-        p = L->next->next; // 第一个结点
-        p->next = r;    
-        r = r->next;
-        p->next->next = 
-        r= r->next;
+  	LNode *r = p->next;
+    p->next = NULL;
+    while (p!=NULL){
+        p->next = L->next; //插入的结点p指向链表中的第一个结点
+        L->next = p; // 令p为链表的第一个结点    
+        p = r; // 待插入结点p后移一位
+      	r = r->next;
     }
 }
 
 // 带有头结点单链表，链表翻转2
-void Traverse1(LinkList &L){
-    
+void Traverse2(LinkList &L){
+  LNode *pre, *p, *r;
+  p = L->next; // 待插入的结点
+  r = p->next;  // 待插入结点的下一个结点
+  pre = NULL; // 初始时，待插入结点为第一个结点，因此前面无结点
+  while (p!=NULL){  // 
+    p->next = pre;
+    L->next = p;
+    pre = p;
+    p = r;
+    r= r->next;
+  } 
 }
 
-// 单链表排序
+// 单链表排序 O(n^2)
 void Sort(LinkList &L){
-    
+    LNode *p = L->next->next; // 待排序结点，从第二个结点开始
+  	L->next->next = NULL;
+  	while (p!=NULL){
+      	LNode *pre = L;
+      	LNode *r = pre->next;
+    		while(r!=NULL){
+        		if (r->data > p->data){ //插入
+            		p->next=r;
+              	pre->next=p;
+            }
+        r->next = p; // 大于链表所有值插入到末尾
+        p = p->next; // p向后移一位
+        r->next->next = NULL; 
+        }
+    }
 }
 
 // 找两个单链表的重合部分
-void Sort(LinkList &L1){
-    
+void GetSame(LinkList L1, LinkList L2){
+    int L1Length =0;
+  	int L2Length =0;
+  	// 分别求两个单链表的长度
+  	LNode *p = L1->next; // 首结点
+  	while(p!=NULL){
+      	L1Length++;
+    }
+    p = L2->next; // 首结点
+  	while(p!=NULL){
+      	L2Length++;
+    }
+  	if (L2Length>L1Length){
+      	k = L2Length - L1Length;
+      	LNode *p2= L2->next;
+      	for(int i=0; i<k-1; ++k){
+          	p = p->next;
+        }
+      	LNode *p1= L1->next;
+      	while(p1!=NULL){
+          	p1 = p1->next;
+          	p2 = p2->next;
+        }
+      		
+    }
+  	// 这部分一样的
+  	else{
+      	k = L1Length - L2Length;
+    }
+
 }
 ```
 
