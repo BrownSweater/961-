@@ -1,4 +1,4 @@
-# 数据结构自定义类型
+# 961数据结构
 
 ## 线性表
 
@@ -525,20 +525,194 @@ void LevelOrder(BiTree T){
 
 ```c++
 // 非递归算法求树的高度
-void GetTreeHeight(BiTNode T){
-    
+// 使用层次遍历，记录下每一层最右边的结点，通过一个变量是否等于最右边结点来判断是否遍历完了一层
+int GetTreeHeight(BiTNode T){
+    InitQueue(Q);
+    BiTNode *p = T, last; // last是每层最右边的结点
+    last = p;
+    int level =0; // 树的高度
+    EnQueue(Q, p);
+    while (p!=null || !IsEmpty(Q)){// p不空或者队列不空进入循环
+        DeQueue(Q, p);
+        if (p->lchild!=null){ //左子树不空入队
+            EnQueue(Q, p->lchild);
+        }
+        if (p->rchild!null){ //右子数不空入队
+            EnQueue(Q, p->rchild);
+        }
+        if (last == p){ //如果p=last，最右边的结点，表示该层已经全部遍历完
+            level++;
+            if (!IsEmpty(Q)){
+                GetBottom(Q, last) // 如果队列不为空，更新last结点为队列底部的元素
+            }
+        }
+    }
+    return level
 }
 
-// 递归算法求树的高度（可扩展到求最大宽度，每层节点数）
+// 递归算法求树的高度（可扩展到求最大宽度，每层节点数)
+int GetTreeHeight(BiTree T){
+    int level=0;
+    if (T!null){
+        level++;
+    }
+    lh = GetTreeHeight(T->lchild);
+    rh = GetTreeHeight(T->rchild);
+    if (lh > rh){
+        level += lh;
+    }
+    else{
+        level += rh;
+    }
+    return level;
+}
 
 
 // 求二叉树所有双分支结点个数
+int TwoChildNodeNum(BiTree T){
+    num = 0;
+    if (T!=null){
+        if (T-lchild!=null && T->rchild!=null){
+            num++;
+        }
+        num += TwoChildNodeNum(T->lchild);
+        num += TwoChildNodeNum(T->rchild);
+    {
+    return num;
+}
+
+// 根据先序和中序构建二叉树, 先序遍历确定根节点，中序遍历切分左右子树
 
 
-// 根据先序和中序构建二叉树
+// 判断是否是完全二叉树，层次遍历，当一个结点为空后，是否还有元素进队
+bool IsComplete(BiTree T){
+    BiTNode *p = T;
+    InitQueue(Q);
+    EnQueue(Q, p);
+    flag = true // 设置一个状态，如果一个结点的子树为空，就设置为false，如果后续还有结点入队，就不是完全树
+    if (p==null){  // 空树
+        return false
+    }
+    while (!IsEmpty(Q)){
+        DeQueue(Q, p);
+        if (p->lchild!null){
+            if (!flag){
+                return false;
+            }
+            EnQueue(Q, p);
+        }
+        else{
+            if (flag){
+                flag = false;
+            }
+        }
+        if (p->rchild!=null){
+            if (!flag){
+                return false;
+            }
+            EnQueue(Q, p);
+        }
+        else{
+            if (flag){
+                flag = false;
+            }
+        }
+    }
+    return true;
+}
 
-// 判断是否是完全二叉树
+        
+// 求非空二叉树的宽度
+        
+// 交换左右子树
+        
 ```
+
+### 4、树
+
+#### 存储结构
+
+- 双亲表示法：`data`和`parent`两个数组，分别存放结点的值和双亲结点的序号，根节点为-1。
+- 孩子表示法：所有结点存在一个数组中，数组的元素是一个链表，存放该结点的孩子结点在数组中的序号。
+- **孩子兄弟表示法（二叉树表示法）**：用二叉链表进行存储，每个结点由三部分构成。左孩子右兄弟。
+  - 结点值
+  - 指向结点第一个孩子结点的指针
+  - 指向结点下一个兄弟结点的指针
+
+```c++
+// 孩子兄弟表示法的存储结构
+typedef struct CSNode{
+    ElemType data;
+    struct CSNode *firstchild, *nextsibling;
+}CSNode, *CSTree
+```
+
+#### 树和二叉树的转换
+
+左孩子右兄弟。
+
+
+
+### 5、二叉排序树（二叉搜索树）
+
+#### 定义
+
+中序遍历是一个递增的序列
+
+- 如果左子树非空，则所有左子树上的值小于根节点的值
+- 如果右子树非空，则所有右子树上的值大于根节点的值
+- 左右子树均为二叉排序树
+
+#### 查找
+
+```c++
+BSTNode *BST_Search(BSTree T, ElemType key){
+    BSTNode *p = T;
+    while (p!null || key=!p->data){
+        if (key>p.data){
+            p = p->rchild;
+        }
+        else{
+            p = p->lchild;
+        }
+    }
+    if (p.data != key){ //查找不成功
+        return null;
+    }
+    return p;
+}
+```
+
+#### 插入
+
+插入的结点一定是一个新添加的叶子结点。
+
+```c++
+// 插入
+void BST_Insert()
+```
+
+
+
+#### 删除
+
+删除结点z：
+
+- 1、z为叶子结点直接删除
+- 2、如果z只有一棵子树，z的子树代替z为z父结点的子树
+- 3、如果z有左右子树，中序第一个子女代替
+
+#### 查找效率分析
+
+查找效率主要取决于树的高度。
+
+- 查找过程和二分查找类似，但是二分查找的判定唯一，而二叉排序树的查找不唯一，相同的关键字插入顺序不同生成的二叉排序树不同。
+- **当有序表是静态查找表时，选择顺序存储作为其存储结构；使用二分查找实现其查找操作；当有序表是动态查找表时，选择二叉排序树作为其逻辑存储结构。**
+- **二叉排序树的插入和删除只需要修改指针，平均执行时间$O(nlog_{2^n})$；二分查找需要移动结点，代价是$O(n)$**
+
+
+
+### 6、平衡二叉树
 
 
 
