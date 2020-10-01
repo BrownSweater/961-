@@ -363,6 +363,120 @@ bool Deleted(DLinkList &L, int i){
 
 
 
+## 栈和队列
+
+### 1、栈
+
+#### 定义及基本操作（ADT）
+
+栈是一种只允许在一端进行插入或者删除的线性表。由栈顶进栈出栈。基本操作如下：
+
+- 1、`InitStack`：初始化一个空栈
+- 2、`StackEmpty`：判断当前栈是否为空
+- 3、`Push`：入栈
+- 4、`Pop`：出栈
+- 5、`GetTop`：获取栈顶元素的值
+- 6、`DestroyStack`：销毁栈
+
+#### 顺序栈
+
+使用顺序存储。
+
+```c++
+#define MaxSize
+typedef struct {
+    ElemType data[MaxSize];
+    int top;
+}SqStack;
+
+// 初始化
+void InitStack(SqStack &S){
+    int S.top=-1;
+}
+
+// 判断栈空
+bool EmptyStack(S){
+    if (S.top==-1){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+// 进栈
+bool Push(SqStack &S, ElemType x){
+    if (S.top==MaxSize-1){ //判断是否栈满
+        return false
+    }
+    S.data[++S.top]=x;
+    return true;
+}
+
+// 出栈
+bool Pop(SqStack &S, ElemType &x){
+    if (EmptyStack(S)){
+        return false;
+    }
+    S.data[S.top--]=x;
+    return true;
+}
+
+// 获取栈顶元素
+bool GetTop(SqStack S, ElemType &x){
+    if (EmptyStack(S)){
+        return false;
+    }
+    x = S.data[top];
+    return true;
+}
+
+// 销毁栈
+void 
+```
+
+#### 链栈
+
+采用链式存储，**优点是便于多个栈贡献存储空间和提高其效率，且不存在栈满**。
+
+- 1、所有操作都是在表头进行
+- 2、无头结点，`LHead`直接指向栈顶元素
+
+```c++
+typedef struct LinkNode{
+    ElemType data;
+    struct LinkNode *next;
+}LinkNode, *LinkList;
+```
+
+### 2、队列
+
+#### 定义及基本操作（ADT）
+
+只允许在队尾（`rear`）入队，队头（`front`）出队的线性表结构。基本操作：
+
+- 1、`InitQueue`
+- 2、`EmptyQueue`
+- 3、`EnQueue`
+- 4、`DeQueue`
+- 5、`GetHead`
+
+#### 队列的顺序存储
+
+```c++
+#define MaxSize 50
+typedef struct{
+    ElemType data[MaxSize];
+    int front, rear;
+}SqQueue;
+```
+
+
+
+### 3、栈的应用
+
+### 4、队列的应用
+
 ## 树
 
 ### 1、二叉树的顺序存储和链式存储
@@ -716,7 +830,45 @@ void BST_Insert()
 
 ### 6、平衡二叉树
 
+#### 定义
 
+左子树和右子树高度差不超过1的二叉排序树。高度差为平衡因子，只能是-1、0、1。
+
+#### 插入
+
+- 1、LL平衡旋转（右单旋转）：在结点A的左孩子的左子树上插入了新结点
+- 2、RR平衡旋转（左单旋转）：在结点A的右孩子的右子树上插入了新结点
+- 3、LR平衡旋转（先左后右双旋转）：在结点A的左孩子的右子树上插入了新结点
+- 4、RL平衡旋转（先右后左双旋转）：在结点A的右孩子的左子树上插入了新结点
+
+#### 查找
+
+优化过的二叉排序树的查找，平均为$O(log_{2^n})$
+
+### 7、哈夫曼树
+
+#### 定义
+
+带权路径长度：WPL。从树的根节点的路径长度与该节点的乘积。在含有n个叶结点的二叉树中，WPL最小的二叉树成为哈弗曼树。
+
+#### 构造
+
+给定n个权值的结点，构造一棵哈夫曼树。
+
+- 1、将n个结点分别作为n棵仅含一个结点的二叉树，构成森林F。
+- 2、从F中选取两棵权值最小的数作为新结点的左子树和右子树，设置其权值为左右子树权值之和。
+- 3、从F中删除刚选出的两棵树，并且将新得到的树放入F中
+- 4、重复过程2、3，直到仅剩下一棵树。
+
+#### 特点
+
+- 1、每个初始结点都成为了叶结点，权值越小的结点到根结点的路径长度越大
+- 2、构造过程中新建了n-1个结点，所以哈夫曼树的结点总数为2n-1
+- 3、不存在度为1的结点
+
+#### 哈夫曼编码
+
+每个出现从字符当作一个独立的结点，其出现的次数作为其权值，构造出对应的哈夫曼树。字符编码就是从根结点到对应叶结点的序列，其中0表示转向左孩子，1表示转向右孩子。
 
 ## 图
 
