@@ -463,19 +463,133 @@ typedef struct LinkNode{
 
 #### 队列的顺序存储
 
+非循环队列会有假溢出。
+
 ```c++
 #define MaxSize 50
 typedef struct{
     ElemType data[MaxSize];
     int front, rear;
 }SqQueue;
+
+
+// 循环队列的基本操作，牺牲一个单元格
+void InitQueue(SqQueue &Q){
+    Q.front=Q.rear=0;
+}
+
+// 判断队满
+bool FullQueue(SqQueue Q){
+    if ((Q.rear+1)%MaxSize== Q.front){
+        return true;
+    }
+    return false;
+}
+
+// 判断队空
+bool EmptyQueue(SqQueue Q){
+    if (Q.front==Q.rear){
+        return true;
+    }
+    return false;
+}
+// 入队
+bool EnQueue(SqQueue &Q, ElemType x){
+    if (FullQueue(Q)){
+        return false;
+    }
+    Q.data[Q.rear]=x;
+    Q.rear = (Q.rear+1)%MaxSize;
+    return true;
+}
+
+// 出队
+bool DeQueue(SqQueue &Q, ElemType &x){
+    if (EmptyQueue(Q)){
+        return false;
+    }
+    x = Q.data[Q.front];
+    Q.front = (Q.front+1)%MaxSize;
+    return true;
+}
+
+```
+
+#### 队列的链式存储
+
+通常设计成一个带头结点的单链表。相比较顺序存储，不存在队列满且产生溢出的问题。
+
+```c++
+typedef struct LinkNode{
+    ElemType data;
+    struct LinkNode *next;
+}
+typedef struct{
+    LinkNode *front, *rear;
+}LinkQueue;
+
+// 初始化
+void InitQueue(LinkQueue, &Q){
+    LinkNode *p = (LinkNode *)malloc(sizeof(LinkNode)); //申请头结点
+    p->next = null;
+    Q.front=Q.rear = p;//初始化指向头结点
+}
+
+// 入队，尾插法
+bool EnQueue(LinkQueue &Q, ElemType x){
+    LinkNode *p = (LinkNode *)malloc(sizeof(LinkNode)); //申请一个结点
+    p->data=x;
+    Q.rear->next = p;
+    p->next=null;
+    Q.rear = p;
+    return true;
+}
+
+// 判断是否空
+bool EmpytyQueue(LinkQueue Q){
+    if (Q.rear=Q.front){
+        return true;
+    }
+    return false;
+}
+
+// 出队
+bool DeQueue(LinkQueue &Q, ElemType &x){
+    if (EmptyQueue(Q)){
+        return false;
+    }
+    LinkNode *p = Q.front->next;
+    x = p->data;
+    Q.front->next = p->next;
+    if (Q.rear=p){
+        Q.rear = Q.front;
+    }
+    free(p);
+    return true;
+}
 ```
 
 
 
 ### 3、栈的应用
 
+#### 括号匹配
+
+#### 表达式求值
+
+- 后缀表达式：顺序扫描表达式的每一项，如果该项是操作数，则将其压入栈中；若该项是操作符。则连续从栈中退出两个操作数y和x，形成运算指令x<op>y，并将运算结果重新压入栈中。
+
+#### 递归
+
 ### 4、队列的应用
+
+#### 层次遍历
+
+#### 计算机系统
+
+
+
+
 
 ## 树
 
@@ -1095,6 +1209,38 @@ void DFS(Graph G, int V){
 
 - 时间复杂度：$O(V^3)$
 - 允许图中有带负权值的边，但不允许包含带有负权值的边组成的回路
+
+
+
+## 查找
+
+#### 查找定义及相关概念
+
+查找、查找表、静态查找表、动态查找表、关键字。
+
+平均查找长度（ASL）：一次查找的长度是需要比较的关键字次数。而平均查找长度是所有查找过程中进行关键字比较次数的平均值。是衡量查找效率的最主要的指标。$P_i$是查找第i个元素的概率，$C_i$是找到第i个元素需要进行的比较次数。
+$$
+ASL=\sum(P_iC_i)
+$$
+
+
+#### 2、线性表查找
+
+##### 顺序查找
+
+| 线性表（可以是链式存储） | $ASL_{成功}$    | $ASL_{失败}$                |
+| ------------------------ | --------------- | --------------------------- |
+| 无序表                   | $\frac{n+1}{2}$ | $n+1$                       |
+| 有序表                   | $\frac{n+1}{2}$ | $\frac{n}{2}-\frac{n}{n+1}$ |
+|                          |                 |                             |
+
+##### 二分查找
+
+```
+int Binary_Search(SqList L, ElemType x){
+	
+}
+```
 
 
 
