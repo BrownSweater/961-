@@ -1310,12 +1310,29 @@ int Binary_Search(SqList L, ElemType x){
 
 ## 六、排序
 
+
+
+| 排序方法                                       | 时间复杂度（平均） | 时间复杂度（最好） | 时间复杂度（最坏） | 空间复杂度    | 稳定性 |
+| ---------------------------------------------- | ------------------ | ------------------ | ------------------ | ------------- | ------ |
+| 直接插入排序                                   | $O(n^2)$           | $O(n)$             | $O(n^2)$           | $O(1)$        | 稳定   |
+| 折半插入排序                                   | $O(n^2)$           | $O(n)$             | $O(n^2)$           | $O(1)$        | 稳定   |
+| 希尔排序                                       | $O(n^{1.3})$       | $O(n)$             | $O(n^2)$           | $O(1)$        | 不稳定 |
+| 冒泡排序                                       | $O(n^2)$           | $O(n)$             | $O(n^2)$           | $O(1)$        | 稳定   |
+| 快速排序                                       | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(n\log_2n)$ | 不稳定 |
+| 简单选择排序                                   | $O(n^2)$           | $O(n^2)$           | $O(n^2)$           | $O(1)$        | 不稳定 |
+| 堆排序                                         | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(1)$        | 不稳定 |
+| 归并排序                                       | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(n)$        | 稳定   |
+| 基数排序：k是待排元素的维数，m是基数（桶）个数 | $O(n+m)$           | $O(k*(n+m))$       | $O(k*(n+m))$       | $O(n+m)$      | 稳定   |
+
+
+
 ### 1、直接插入排序
 
 如果是链式存储，插入时从前向后遍历。
 
 ```c++
 // 实际使用应该不会给一个哨兵数组
+// n表示数组长度，不包含哨兵结点
 void InsertSort(ElemType A[], int n){
     // 第一个元素是哨兵元素
     for (int i=2; i=<n; i++){
@@ -1335,7 +1352,7 @@ void InsertSort(ElemType A[], int n){
     for(int i=1; i<n; ++i){
         if (A[i]<A[i-1]){ // 比前面一个元素小，需要插入
             tmp=A[i]; // 缓存当前元素
-            for(int j=i-1; A[j]<tmp || j==-1; --j){ //找到插入的位置，j==-1说明需要插入到头部
+            for(int j=i-1; j>0 && A[j]<tmp; j--){ //找到插入的位置，j==-1说明需要插入到头部
                 A[j+1]=A[j];
             }
             A[j+1]=tmp;
@@ -1350,15 +1367,28 @@ void InsertSort(ElemType A[], int n){
 
 ### 3、希尔排序
 
+一次移动，移动位置较大，跳跃式的接近排序后的最终位置。
+
 ```c++
 void ShellSort(ElemType A[], int n){
-    
+    // A[0]用于暂存元素，n为长度
+    for (int dk=n/2; dk>=1; dk=dk/2){ // 步长变化，初始步长为n/2，最后一步必须等于1
+        for (int i=dk+1; i<=n; ++i){  // 不带哨兵结点的插入排序
+            if (A[i]<A[i-dk]){
+                A[0]=A[i];
+                for (int j=i-dk; j>0&&A[0]<A[j]; j-=dk){
+                    A[j+dk]=A[j];
+                }
+                A[i+dk]=A[0];
+            }
+        }
+    }
 }
 ```
 
 ### 4、快速排序
 
-快速排序是一个交替搜索和交换的过程。
+快速排序是一个交替搜索和交换的过程。基本有序或者逆序时，效率最低。是所有内部排序中平均性能最优的排序算法。
 
 ```c++
 void QuikSort(ElemType A[], int low, int high){
@@ -1407,6 +1437,124 @@ void SelectSort(ElemType A[], int n){
 ```
 
 ### 6、堆排序
+
+堆的定义：满足下列性质的完全二叉树：
+
+- 大顶堆：每个节点的值都大于或等于其左右孩子结点的值
+- 小顶堆：每个节点的值都小于或等于其左右孩子结点的值
+
+#### 如何构建一个堆
+
+从下向上遍历每一个非叶子结点，编号$\lfloor \frac{n}{2} \rfloor$，若该结点不大于左右孩子结点，将其与左右孩子结点的最大值交换。完成初步堆的建立。
+
+#### 输出堆顶元素后，如何调整剩余元素成为一个新的堆
+
+将堆顶元素和最后一个元素交换，完成堆顶元素的输出后，堆结构被破坏。针对剩下的$n-1$个结点构成的完全二叉树，依次从上向下遍历每一个非叶子结点，若该结点不大于左右孩子结点，将其与左右孩子结点的最大值交换。将其调整为一个新的堆。
+
+#### 堆排序代码
+
+```c++
+// 数组A中是完全二叉树的顺序存储，A[0]中不存放有效元素，方便使用编号访问相关结点
+// 完成建堆
+void BuildMaxHeap(ElemType A[], int len){
+    for (int i=len/2; i>0; i--){
+        HeadAdjust(A, i, len);
+}
+    
+// 将k为根的子树进行调整
+void HeadAdjust(ElemType A[], int k, int len){
+    A[0]=A[k];
+    for (int i=2*k; i<=len; i*=2){
+        if (i<len && A[i]<A[i+1]){ // i<len控制不是最后一个结点
+            i++; // 取左右结点中值更大的结点
+        }
+        if (A[0]>A[i]){
+            break;
+        }
+        else{
+            A[k] = A[i];
+            k=i; // 更新k的值，向下更新子树
+        }
+    }
+    A[k] = A[0]; // 调整的值放入最终位置
+    
+}
+    
+// 堆排序
+void HeapSort(ElemType A[], int len){
+    BuildMaxHeap(A, len);
+    for (int i=len; i>1; i--){
+        Swap(A[i], A[1]);
+        HeadAdjust(A, 1, i-1);
+    }
+}
+```
+
+### 7、归并排序
+
+```c++
+ElemType *B = (ElemType*)malloc(sizeof(ElemType)*(n+1)); // 辅助数组B
+void Merge(ElemType A[], int low, int mid, int high){
+    // 表A的[low...mid]和[mid+1...high]，各自有序，将他们合并成一个有序表
+    for (int k=low; k=<high; k++){
+        B[k]=A[k]; // 复制待合并元素到辅助数组B
+    }
+    for (int i=low, int j=mid+1, k=i; i=<mid && j<=high; k++){
+        if (B[i]<B[j]){
+            A[k]=B[i++];
+        }
+        else{
+            A[k]=B[j++];
+        }
+    }
+    // 两个while只会执行一个
+    while (i=<mid){
+        A[k++] = B[i++];
+    }
+    while (j=<high){
+        A[k++] = B[j++];
+    }
+}
+
+void MergeSort(ElemType A[], int low, int high){
+    if (low<high){
+        int mid = (low+high)/2;
+        MergeSort(A, low, mid);
+        MergeSort(A, mid+1, high);
+        Merge(A, low, mid, high);
+    }
+}
+```
+
+
+
+### 8、基数排序
+
+基于关键字的排序方法
+
+
+
+### 9、冒泡排序
+
+冒泡排序中产生的子序列一定是全局有序的，不同于插入排序。
+
+```c++
+void BubbleSort(ElemType A[], int n){
+    // 不需要哨兵结点
+    for (int i=0; i<n-1, i++){
+        flag = false; // 本躺冒泡是否发生元素交换
+        for (int j=n-1; j>i; j--){
+            if (A[j-1]>A[j]){
+                swap(A[j], A[j-1]);
+                flag = true;
+            }
+        }
+        if (!flag){
+            return; // 没有元素交换表示结束
+        }
+    }
+}
+```
 
 
 
