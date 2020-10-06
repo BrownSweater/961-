@@ -1146,12 +1146,12 @@ void DFSTraverse(Graph G){
         }
     }
 }
-void DFS(Graph G, int V){
+void DFS(Graph G, int v){
     visit(v);
-    visited[i]=true;
+    visited[v]=true;
     for(w=FirstNerghbor(G,v); w>=0; w=NextNeighbor(G, v, w)){
          if (!visited(w)){
-              DFS(G, i);
+              DFS(G, w);
          }
     }
 }
@@ -1318,7 +1318,7 @@ int Binary_Search(SqList L, ElemType x){
 | 折半插入排序                                   | $O(n^2)$           | $O(n)$             | $O(n^2)$           | $O(1)$        | 稳定   |
 | 希尔排序                                       | $O(n^{1.3})$       | $O(n)$             | $O(n^2)$           | $O(1)$        | 不稳定 |
 | 冒泡排序                                       | $O(n^2)$           | $O(n)$             | $O(n^2)$           | $O(1)$        | 稳定   |
-| 快速排序                                       | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(n\log_2n)$ | 不稳定 |
+| 快速排序                                       | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(n^2)$           | $O(n\log_2n)$ | 不稳定 |
 | 简单选择排序                                   | $O(n^2)$           | $O(n^2)$           | $O(n^2)$           | $O(1)$        | 不稳定 |
 | 堆排序                                         | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(1)$        | 不稳定 |
 | 归并排序                                       | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(n\log_2n)$      | $O(n)$        | 稳定   |
@@ -1411,6 +1411,7 @@ int Partition(ElemType A[], int low, int high){
         A[high]=A[low];// 将比划分元素大的元素移动到右端 
     }
     A[low]=pivot;
+    return low;
 }
 ```
 
@@ -1542,7 +1543,7 @@ void MergeSort(ElemType A[], int low, int high){
 void BubbleSort(ElemType A[], int n){
     // 不需要哨兵结点
     for (int i=0; i<n-1, i++){
-        flag = false; // 本躺冒泡是否发生元素交换
+        flag = false; // 本趟冒泡是否发生元素交换
         for (int j=n-1; j>i; j--){
             if (A[j-1]>A[j]){
                 swap(A[j], A[j-1]);
@@ -1558,6 +1559,59 @@ void BubbleSort(ElemType A[], int n){
 
 
 
+### 10、排序相关的算法题
+
+```c++
+// 在数组L[1....n]中找出第k小的元素
+int Search_bottom_k(int L[], int low, int high, int k){
+    int pivot=L[0];
+    tmp_low = low;
+    tmp_high = high;
+    while (low<high){
+        while (low<high && L[high]>=pivot){
+            high--;
+        }
+        A[low]=A[high]
+        while (low<high && L[low]=<pivot){
+            low++;
+        }
+        A[high]=A[low]
+    }
+    if (low==k){
+        return x;
+    }
+    else if (low>k){
+        Search_bottom_k(L, tmp_low, low-1, k);
+    }
+    else{
+        Search_bottom_k(L, low+1, tmp_high, k-m);
+    }
+}
+// 把所有奇数元素移到偶数元素前面
+void move(int A[], int len){
+    int low =0;
+    int high = len -1;
+    int pivot = A[low]
+    while (low < high){
+        while (low<high && A[high]%2==0){
+            high--;
+        }
+        A[low]=A[high];
+        while (low<high && A[low]%2==1){
+            low++;
+        }
+        A[high]=A[low]
+    }
+    A[low]=pivot;
+}
+
+// 判断一个数据序列是否是一个小根堆
+
+// 基于单链表的简单选择排序
+```
+
+
+
 # 历年考点
 
 |      | 线性表                                  | 树                       | 排序         | 查找       | 图               |
@@ -1569,4 +1623,130 @@ void BubbleSort(ElemType A[], int n){
 |      |                                         |                          |              |            |                  |
 
 
+
+# 问题记录
+
+## 1、求解前top(k)个元素的问题
+
+优先想到堆排序、冒泡排序、简单选择排序。这三种排序只需要运行k次就可以得到前k小的子序列。排除简单选择排序，因为它的复杂度是固定的。对于堆排序，建立初始堆的时间不超过4n，取前k小元素的时间是$k\log_2 n$，冒泡排序和简单选择排序在最差情况下是kn，所以可以根据比较k的大小，选择合适的排序算法。
+
+## 2、求解第k小的元素
+
+基于快速排序的思想。平均复杂度可以达到$O(n)$
+
+
+
+```c++
+#define MaxVertexNum 100
+typedef struct MGraph{
+    char Vex[MaxVertexNum];
+    int Edge[MaxVertexNum][MaxVertexNum]; // 二维数组
+    int vexnum, arcnum; // 顶点数和边数
+};
+// 广度优先遍历
+void BFSTraverse(Graph G){
+    bool visited[G.vexnum]; // 标记状态的数组
+    for(int i=0; i<G.vexnum; i++){
+        visited[i] = false; //初始化为false
+    }
+    for (int i=0; i<G.vexnum; i++){ // 遍历连通分量
+        if (!visited[i]){
+            BFS(G, i);
+        }
+    }
+}
+
+void BFS(MGraph G, int vex){
+    InitQueue(Q); // 初始化一个辅助队列
+    EnQueue(Q, vex); // 入队
+    visit(G, vex); // 先访问
+    visited[i] = true;
+    while (!IsEmpyty(Q)){
+        DeQueue(Q, vex); // 取出一个顶点
+        for (int i=FirstNeighbor(G, vex); i>0; i=NextNeighbor(G, vex, i)){
+            if (!visited[i]){
+                visit(G, i);
+                visited[i] = true;
+                EnQueue(i);
+            }
+    	}
+    }
+}
+
+// 深度优先遍历
+void DFSTraverse(Graph G){
+    bool visited[G.vexnum];
+    for(int i=0; i<G.vexnum; i++){
+        visited[i] = false; //初始化为false
+    }
+    for (int i=0; i<G.vexnum; i++){ v// 遍历每一个连通分量
+        if (!visited[i]){
+            DFS(G, i);
+        }
+    }
+}
+
+void DFS(Graph G, int vex){
+    visit(G, vex);
+    visited[i] = true;
+    for(w=FirstNerghbor(G,vex); w>=0; w=NextNeighbor(G, vex, w)){
+        if (!visited[w]){
+            DFS(G, w);
+        }
+    }
+}
+
+
+
+// 快速排序
+int Partion(ElemType A[], int low, int high){
+    ElemType privot=A[low]; // 中枢元素
+    while (low<high){
+        while (low<high && A[high]>=privot){
+            high--;
+        }
+        A[low]=A[high];
+        while (low<high && A[low]=<privot){
+            low++;
+        }
+        A[high]=A[low];
+    }
+    A[low]=privot;
+    return low
+}
+void QuikSort(ElemType A[], int low, int high){
+    pos = Partion(A, low, high);
+    QuikSort(A, low, pos);
+    QuikSort(A, pos+1, high);
+}
+        
+// 堆排序
+// 构建一个大顶堆        
+void BuildMaxHeap(ElemType A[], int len){
+    for (int i=len/2; i>0; i--){ // 根节点是1
+        HeadAdjust(A, i);
+    }
+}
+void HeadAdjust(ElemType A[], int k, int len){
+    A[0]=A[k]; // 临时存放根节点的值
+    for (i=2*k; i=<len; i=2*i){ // 循环结束的条件是无左子树，即为叶子结点，每次循环都是去找上一个遍历结点的孩子结点
+        if (i<len && A[i]<A[i+1]){ // 首先判断是否存在右孩子，如果存在再比较大小
+            i++;
+        }
+        if (A[i]<A[k]){ // 根节点大于孩子结点，无需调整
+            break;  
+        }
+        k=i;
+        swap(A[i], A[k]); // 调整
+    }
+    A[k] = A[0]; 
+}
+void HeapSort(ElemType A[], int len){
+    BuildMaxHeap(A, len);
+    for (int i=len; i>0; i--){
+        swap(A[i], A[1]); // 输出堆顶元素到数组末尾
+        HeadAdjust(A, 1, i); // 调整成一个新的堆
+    }
+}
+```
 
