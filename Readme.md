@@ -439,7 +439,7 @@ void
 
 采用链式存储，**优点是便于多个栈贡献存储空间和提高其效率，且不存在栈满**。
 
-- 1、所有操作都是在表头进行
+- 1、所有操作都是在表头进行，所以不需要头结点
 - 2、无头结点，`LHead`直接指向栈顶元素
 
 ```c++
@@ -670,7 +670,7 @@ void InOrder2(BiTree T){
     while (p || !IsEmpty(S)){ // p不空或者栈不空时循环
         if (p!=null){
             Push(S, p);  // p不为空一直访问左子树
-            p = p->next; 
+            p = p->lchild; 
         }
         else{
             Pop(S, p); // p空就出栈访问结点
@@ -807,7 +807,7 @@ int TwoChildNodeNum(BiTree T){
         }
         num += TwoChildNodeNum(T->lchild);
         num += TwoChildNodeNum(T->rchild);
-    {
+    }
     return num;
 }
 
@@ -855,6 +855,16 @@ bool IsComplete(BiTree T){
 // 求非空二叉树的宽度
         
 // 交换左右子树
+void swap(BiTree &T){
+    if (T){
+        swap(T->lchild);
+        swap(T->rchild);
+        temp=T->lchild;
+        T->lchild = T->rchild;
+        T->rchild = temp;
+    }
+}
+        
         
 ```
 
@@ -939,6 +949,60 @@ void BST_Insert()
 - 查找过程和二分查找类似，但是二分查找的判定唯一，而二叉排序树的查找不唯一，相同的关键字插入顺序不同生成的二叉排序树不同。
 - **当有序表是静态查找表时，选择顺序存储作为其存储结构，使用二分查找实现其查找操作；当有序表是动态查找表时，选择二叉排序树作为其逻辑存储结构。**
 - **二叉排序树的插入和删除只需要修改指针，平均执行时间$O(nlog_{2^n})$；二分查找需要移动结点，代价是$O(n)$**
+
+
+
+#### 相关代码题
+
+```c++
+// 判断一棵二叉树是否为二叉排序树，中序遍历
+bool JudgeBST(BiTree, T){
+    BiTNode *p = T;
+    if (p == null){
+        return false; // 空树
+    }
+    tmp=inf;
+    InitStack(S);
+    while (!IsEmpty(S) || p!=null){
+        if (p != null){
+            Push(S, p);
+            p = p->lchild;
+        }
+        else{
+            Pop(S, p);
+            if p.data=<tmp{
+                return false;
+            }
+            p=p->rchild;
+            
+        }
+    }
+    return true;
+}
+// 判断一棵二叉树是否是平衡二叉树
+
+
+// 求出二叉排序树种最小和最大的关键字。不需要比较，最左边的结点最小，最右边的结点最大
+void GetBSTMin(BiTree *T, ElemType &x){
+    BiTNode *p = T;
+    if (p->lchild != null){
+        p=p->lchild;
+    }
+    else{
+        x = p.data;
+    }
+}
+
+void GetBSTMax(BiTree *T, ElemType &x){
+    BiTNode *p = T;
+    if (p->rchild != null){
+        p=p->rchild;
+    }
+    else{
+        x = p.data;
+    } 
+}
+```
 
 
 
@@ -1633,6 +1697,27 @@ void move(int A[], int len){
 ## 2、求解第k小的元素
 
 基于快速排序的思想。平均复杂度可以达到$O(n)$
+
+
+
+## 3、二叉树的遍历
+
+优先掌握中序遍历、层次遍历。
+
+- 1、中序遍历：
+  - 1、可以结合二叉排序树和二叉搜索树考，因为中序遍历可以得到一个递增的序列，结合辅助队列和辅助栈，得到升序和降序序列。
+  - 2、可以用来判断一棵二叉树是不是二叉排序树
+- 2、层次遍历：
+  - 1、二叉树的深度
+  - 2、二叉树的宽度
+  - 3、判断是否是完全二叉树
+
+
+
+## 4、哈夫曼树
+
+- 1、哈夫曼编码
+- 2、多表合并
 
 
 
